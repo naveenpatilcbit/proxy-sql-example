@@ -1,0 +1,7 @@
+docker exec -it clickhouse clickhouse-client --user=default --password=default
+
+docker exec -it mysql mysql -u proxysql_user -p proxysql_pass
+
+docker exec -it proxysql mysql -u admin -padmin -h 127.0.0.1 -P6032 --prompt='ProxySQL Admin> '
+
+docker run -it --rm mysql:8.0 mysql -u proxysql_user -pproxysql_pass -h host.docker.internal -P6033

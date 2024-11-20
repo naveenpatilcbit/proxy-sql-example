@@ -1,0 +1,6 @@
+<yandex>
+    <mysql>
+        <port>9004</port> <!-- MySQL interface port -->
+        <allow_hostname_replace>false</allow_hostname_replace>
+    </mysql>
+</yandex>

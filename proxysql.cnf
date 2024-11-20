@@ -1,0 +1,55 @@
+datadir="/var/lib/proxysql"
+
+admin_variables=
+{
+    admin_credentials="admin:admin"
+    mysql_ifaces="0.0.0.0:6032"
+}
+
+mysql_variables=
+{
+    threads=4
+    max_connections=1024
+    default_query_delay=0
+    default_query_timeout=36000000
+    poll_timeout=2000
+    interfaces="0.0.0.0:6033"
+    default_schema="testdb"
+    stacksize=1048576
+    server_version="5.5.30"
+    connect_timeout_server=10000
+    monitor_username="monitor"
+    monitor_password="monitor"
+    monitor_history=60000
+    monitor_connect_interval=200000
+    monitor_ping_interval=10000
+    monitor_read_only_interval=1500
+}
+
+mysql_servers =
+(
+    { address="mysql", port=3306, hostgroup=1, max_connections=1000 },
+    { address="clickhouse", port=9004, hostgroup=2, max_connections=1000 }
+)
+
+mysql_users =
+(
+    { username="proxysql_user", password="proxysql_pass", default_hostgroup=1, active=1 },
+    { username="proxysql_pass", password="proxysql_pass", default_hostgroup=2, active=1 }
+)
+
+mysql_query_rules =
+(
+    {
+        rule_id=1
+        match_pattern="^SELECT"
+        destination_hostgroup=2
+        apply=1
+    },
+    {
+        rule_id=2
+        match_pattern="^INSERT|^UPDATE|^DELETE"
+        destination_hostgroup=1
+        apply=1
+    }
+)

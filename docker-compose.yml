@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: proxysql_user
+      MYSQL_PASSWORD: proxysql_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+
+  clickhouse:
+    image: yandex/clickhouse-server:latest
+    container_name: clickhouse
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9004:9004"
+      - "8123:8123"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      # - ./clickhouse-init:/docker-entrypoint-initdb.d
+      - ./clickhouse-config/users.xml:/etc/clickhouse-server/users.xml
+      - ./clickhouse-config.xml:/etc/clickhouse-server/config.d/custom-config.xml
+  proxysql:
+    image: proxysql/proxysql:latest
+    container_name: proxysql
+    restart: always
+    ports:
+      - "6032:6032" # Admin interface
+      - "6033:6033" # MySQL client interface
+    volumes:
+      - ./proxysql.cnf:/etc/proxysql.cnf
+    depends_on:
+      - mysql
+      - clickhouse
+volumes:
+  mysql_data:
+  clickhouse_data:
